@@ -295,11 +295,16 @@ button:hover {
     let current = 0;
     let score = 0;
     let finished = false;
+    let shuffledQuestions = [...questions];
+
+function shuffleQuestions() {
+  shuffledQuestions.sort(() => Math.random() - 0.5);
+}
 
     const el = id => document.getElementById(id);
 
     function showQuestion() {
-      const q = questions[current];
+const q = shuffledQuestions[current];
       el("count").textContent =
         `第${current + 1}問 / 全${questions.length}問`;
       el("score").textContent = `正解 ${score}問`;
@@ -385,12 +390,14 @@ button:hover {
       current = 0;
       score = 0;
       finished = false;
+      shuffleQuestions();
       el("a").style.display = "";
       el("b").style.display = "";
       el("next").onclick = nextQuestion;
       showQuestion();
     }
 
+    shuffleQuestions();
     showQuestion();
   </script>
 </body>
