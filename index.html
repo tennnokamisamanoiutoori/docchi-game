@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>どっちが多い？</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f4f6fb;
+      color: #222b45;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle { color: #68738b; }
+
+    .status {
+      display: flex;
+      justify-content: space-between;
+      margin: 30px 0 18px;
+      font-weight: bold;
+    }
+
+    .progress {
+      height: 8px;
+      background: #dfe4ef;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #bar {
+      height: 100%;
+      width: 0;
+      background: #6678e8;
+      transition: width .3s;
+    }
+
+    .question {
+      margin: 28px 0;
+      font-size: 22px;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .choice {
+      background: white;
+      border: 2px solid #e0e5f0;
+      border-radius: 20px;
+      padding: 26px 14px;
+      min-height: 160px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      color: #222b45;
+      transition: .2s;
+    }
+
+    .choice:hover:not(:disabled) {
+      border-color: #6678e8;
+      transform: translateY(-3px);
+    }
+
+    .choice:disabled { cursor: default; }
+
+    .choice .symbol {
+      display: block;
+      font-size: 32px;
+      margin-bottom: 14px;
+    }
+
+    #result {
+      display: none;
+      background: white;
+      border-radius: 16px;
+      padding: 22px;
+      margin-top: 22px;
+      line-height: 1.8;
+      text-align: left;
+    }
+
+    #result h2 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+
+    .main-button {
+      border: 0;
+      border-radius: 12px;
+      background: #6678e8;
+      color: white;
+      padding: 15px 28px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 22px;
+    }
+
+    .main-button:hover { background: #5264d4; }
+
+    #next { display: none; }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 29px; }
+      .choices { gap: 10px; }
+      .choice { padding: 20px 8px; font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>どっちが多い？</h1>
+    <p class="subtitle">直感を信じて選んでみよう！</p>
+
+    <div class="status">
+      <span id="count">第1問 / 全10問</span>
+      <span id="score">正解 0問</span>
+    </div>
+
+    <div class="progress"><div id="bar"></div></div>
+
+    <p class="question">どちらの数が多いでしょう？</p>
+
+    <div class="choices">
+      <button class="choice" id="a" onclick="answer('a')"></button>
+      <button class="choice" id="b" onclick="answer('b')"></button>
+    </div>
+
+    <section id="result" aria-live="polite"></section>
+    <button class="main-button" id="next" onclick="nextQuestion()">次の問題へ →</button>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        a: "日本の都道府県",
+        b: "アメリカの州",
+        correct: "b",
+        explanation: "日本は47都道府県、アメリカは50州です。"
+      },
+      {
+        a: "地球の海の面積",
+        b: "地球の陸地の面積",
+        correct: "a",
+        explanation: "地球の表面の約71%を海が占めています。"
+      },
+      {
+        a: "成人の骨の数",
+        b: "成人の筋肉の数",
+        correct: "b",
+        explanation: "成人の骨は通常約206本。筋肉は数百あるとされます。"
+      },
+      {
+        a: "世界の言語の数",
+        b: "世界の国の数",
+        correct: "a",
+        explanation: "世界には数千の言語があります。国の数よりずっと多いです。"
+      },
+      {
+        a: "1兆秒",
+        b: "3万年",
+        correct: "a",
+        explanation: "1兆秒は約3万1700年です。"
+      },
+      {
+        a: "日本の大学の数",
+        b: "日本のプロ野球チーム数",
+        correct: "a",
+        explanation: "日本の大学は約800校、プロ野球の球団は12球団です。"
+      },
+      {
+        a: "地球から月までの距離",
+        b: "地球一周の距離",
+        correct: "a",
+        explanation: "月までの平均距離は約38万km。地球一周は約4万kmです。"
+      },
+      {
+        a: "日本の出生数",
+        b: "日本の死亡数",
+        correct: "b",
+        explanation: "近年の日本では、年間の死亡数が出生数を上回っています。"
+      },
+      {
+        a: "世界の海の面積",
+        b: "世界の全陸地の面積",
+        correct: "a",
+        explanation: "海は地球の表面の約71%を占め、陸地より広いです。"
+      },
+      {
+        a: "日本の市町村の数",
+        b: "日本の国会議員の定数",
+        correct: "a",
+        explanation: "市町村は約1700、国会議員の定数は衆参合計713です。"
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let finished = false;
+
+    const el = id => document.getElementById(id);
+
+    function showQuestion() {
+      const q = questions[current];
+      el("count").textContent =
+        `第${current + 1}問 / 全${questions.length}問`;
+      el("score").textContent = `正解 ${score}問`;
+      el("bar").style.width =
+        `${current / questions.length * 100}%`;
+
+      el("a").innerHTML = `<span class="symbol">🅰️</span>${q.a}`;
+      el("b").innerHTML = `<span class="symbol">🅱️</span>${q.b}`;
+
+      el("a").disabled = false;
+      el("b").disabled = false;
+      el("a").style.borderColor = "";
+      el("b").style.borderColor = "";
+      el("result").style.display = "none";
+      el("next").style.display = "none";
+    }
+
+    function answer(selected) {
+      if (el("a").disabled || finished) return;
+
+      const q = questions[current];
+      const correct = selected === q.correct;
+
+      if (correct) score++;
+
+      el("a").disabled = true;
+      el("b").disabled = true;
+
+      el(q.correct).style.borderColor = "#28a66a";
+      if (!correct) {
+        el(selected).style.borderColor = "#e05c65";
+      }
+
+      el("score").textContent = `正解 ${score}問`;
+      el("bar").style.width =
+        `${(current + 1) / questions.length * 100}%`;
+
+      el("result").innerHTML = `
+        <h2>${correct ? "🎉 正解！" : "💡 残念！"}</h2>
+        <strong>正解：</strong>${q[q.correct]}<br>
+        ${q.explanation}
+      `;
+      el("result").style.display = "block";
+
+      el("next").textContent =
+        current === questions.length - 1 ? "結果を見る →" : "次の問題へ →";
+      el("next").style.display = "inline-block";
+    }
+
+    function nextQuestion() {
+      if (current < questions.length - 1) {
+        current++;
+        showQuestion();
+      } else {
+        showFinalResult();
+      }
+    }
+
+    function showFinalResult() {
+      finished = true;
+      el("count").textContent = "ゲーム終了！";
+      el("bar").style.width = "100%";
+      el("a").style.display = "none";
+      el("b").style.display = "none";
+      el("result").innerHTML = `
+        <h2>🏆 あなたの結果</h2>
+        <p style="font-size:28px;font-weight:bold;text-align:center">
+          ${questions.length}問中 ${score}問正解！
+        </p>
+        <p style="text-align:center">
+          ${score === questions.length ? "全問正解！すごい！" :
+            score >= 7 ? "素晴らしい成績！" :
+            score >= 4 ? "なかなかの推理力！" :
+            "次はもっと正解を目指そう！"}
+        </p>
+      `;
+      el("result").style.display = "block";
+      el("next").textContent = "もう一度遊ぶ ↻";
+      el("next").onclick = restart;
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      finished = false;
+      el("a").style.display = "";
+      el("b").style.display = "";
+      el("next").onclick = nextQuestion;
+      showQuestion();
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>
