@@ -1,445 +1,395 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>どっちが多い？</title>
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background: radial-gradient(circle at top, #20204a, #080812 75%);
-      color: #f5f3ff;
-    }
-
-    .container {
-      max-width: 760px;
-      margin: 24px auto;
-      padding: 32px 20px;
-      text-align: center;
-      background: rgba(15, 15, 35, 0.85);
-      border: 1px solid #494078;
-      border-radius: 24px;
-      box-shadow: 0 0 30px #7c3aed30;
-    }
-
-    h1 {
-      font-size: 36px;
-      margin-bottom: 8px;
-      color: #a78bfa;
-      text-shadow: 0 0 12px #8b5cf6, 0 0 28px #6366f1;
-    }
-
-    .subtitle { color: #c4b5fd; }
-
-    .status {
-      display: flex;
-      justify-content: space-between;
-      margin: 30px 0 18px;
-      font-weight: bold;
-      color: #e9d5ff;
-      gap: 10px;
-    }
-
-    .progress {
-      height: 8px;
-      background: #292442;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    #bar {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(90deg, #a855f7, #22d3ee);
-      box-shadow: 0 0 12px #a855f7;
-      transition: width .3s;
-    }
-
-    .question {
-      margin: 28px 0;
-      font-size: 22px;
-    }
-
-    .choices {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    button {
-      font-family: inherit;
-      background: linear-gradient(135deg, #7c3aed, #2563eb);
-      color: white;
-      border: 1px solid #a78bfa;
-      border-radius: 14px;
-      box-shadow: 0 0 12px #7c3aed80;
-      transition: transform .2s, box-shadow .2s;
-    }
-
-    button:hover:not(:disabled) {
-      transform: translateY(-3px);
-      box-shadow: 0 0 22px #8b5cf6;
-    }
-
-    .choice {
-      background: #17162c;
-      color: #f5f3ff;
-      border: 2px solid #514477;
-      border-radius: 20px;
-      padding: 26px 14px;
-      min-height: 160px;
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: bold;
-      box-shadow: 0 0 12px #6366f130;
-      overflow-wrap: anywhere;
-    }
-
-    .choice:hover:not(:disabled) {
-      border-color: #22d3ee;
-      box-shadow: 0 0 20px #22d3ee50;
-    }
-
-    .choice:disabled { cursor: default; }
-
-    .choice .symbol {
-      display: block;
-      font-size: 32px;
-      margin-bottom: 14px;
-    }
-
-    #result {
-      display: none;
-      background: #17162c;
-      color: #f5f3ff;
-      border: 1px solid #514477;
-      border-radius: 16px;
-      padding: 22px;
-      margin-top: 22px;
-      line-height: 1.8;
-      text-align: left;
-    }
-
-    #result h2 {
-      margin-top: 0;
-      font-size: 22px;
-    }
-
-    .main-button {
-      border-radius: 12px;
-      padding: 15px 28px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 22px;
-    }
-
-    #next { display: none; }
-
-    @media (max-width: 480px) {
-      h1 { font-size: 29px; }
-      .choices { gap: 10px; }
-      .choice { padding: 20px 8px; font-size: 16px; }
-      .container { padding: 24px 14px; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Burger Planet! — 世界をおいしく染めよう</title>
+<style>
+:root{
+ --ink:#382a49;--muted:#796b86;--cream:#fff9e9;--paper:#fffdf7;--pink:#ff6f91;
+ --orange:#ff9f43;--yellow:#ffd45c;--mint:#73dfbd;--blue:#72c9f4;--purple:#9b83ff;
+ --line:#f0dfc8;--shadow:0 8px 0 #ead9c5;--radius:22px
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:ui-rounded,"Trebuchet MS","Hiragino Maru Gothic ProN",system-ui,sans-serif}
+button{font:inherit;cursor:pointer;border:0;color:inherit}
+button:focus-visible{outline:3px solid #4d8bff;outline-offset:3px}
+.topbar{background:#fffdf7;border-bottom:3px solid var(--line);padding:12px clamp(14px,3vw,34px);display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:10}
+.logo{display:flex;align-items:center;gap:10px;font-weight:1000;font-size:clamp(18px,3vw,26px);letter-spacing:-.8px}
+.logo-burger{font-size:32px;filter:drop-shadow(0 3px 0 #edc7a0)}
+.pill{background:#f4edff;border:2px solid #e3d6ff;border-radius:999px;padding:8px 13px;font-weight:900;font-size:13px;white-space:nowrap}
+main{max-width:1240px;margin:auto;padding:20px clamp(12px,2vw,24px) 40px}
+.hero{background:linear-gradient(110deg,#ffedaa,#ffd5df 60%,#d8f8e9);border:3px solid #fff;border-radius:30px;padding:clamp(18px,3vw,30px);box-shadow:var(--shadow);display:grid;grid-template-columns:1.3fr .7fr;align-items:center;gap:16px;margin-bottom:22px;overflow:hidden;position:relative}
+.eyebrow{font-size:12px;font-weight:1000;letter-spacing:1.4px;color:#9b5b45;text-transform:uppercase}
+h1{font-size:clamp(28px,4.4vw,48px);line-height:1.05;margin:7px 0 10px;letter-spacing:-1.5px}
+.hero p{margin:0;line-height:1.7;color:#6c5668;font-weight:650;max-width:650px}
+.hero-art{text-align:center;font-size:clamp(74px,11vw,128px);transform:rotate(-7deg);filter:drop-shadow(0 9px 0 #e7b4a0);animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-7deg)}50%{transform:translateY(-7px) rotate(5deg)}}
+.status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.stat{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:12px 14px;min-width:0}
+.stat .label{font-size:11px;font-weight:900;color:var(--muted);letter-spacing:.3px}
+.stat .value{font-size:clamp(18px,2.7vw,27px);font-weight:1000;margin-top:2px}
+.stat .value small{font-size:12px;color:var(--muted)}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 18px}
+.tab{padding:12px 17px;border-radius:15px;background:#fff;border:2px solid var(--line);font-weight:950;color:var(--muted);transition:.15s}
+.tab.active{background:var(--ink);border-color:var(--ink);color:white;box-shadow:0 4px 0 #c8b7d7;transform:translateY(-2px)}
+.panel{display:none}.panel.active{display:block}
+.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.8fr);gap:16px;align-items:start}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:var(--radius);padding:17px;box-shadow:0 5px 0 #f0e2d1;min-width:0}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.card h2{font-size:20px;margin:0;letter-spacing:-.5px}
+.card h3{margin:0 0 8px;font-size:16px}
+.sub{font-size:12px;color:var(--muted);font-weight:700;line-height:1.6}
+.map-wrap{background:#d8f4ed;border-radius:18px;overflow:hidden;border:2px solid #b7e6d9;position:relative}
+#worldmap{width:100%;height:auto;display:block;min-height:270px}
+.land{fill:#9ed9a7;stroke:#fff9e9;stroke-width:2.4;stroke-linejoin:round}
+.land:nth-child(even){fill:#b9e8a5}
+.region-pin{cursor:pointer;stroke:white;stroke-width:3;transition:r .15s,filter .15s}
+.region-pin:hover{filter:brightness(1.07);stroke:#382a49;stroke-width:4}
+.region-pin.locked{fill:#b6b1bd!important;stroke:#fff;stroke-dasharray:3 2}
+.region-label{font-size:10px;font-weight:1000;fill:#382a49;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:#d8f4ed;stroke-width:3px;stroke-linejoin:round}
+.map-legend{display:flex;gap:12px;flex-wrap:wrap;padding:10px 4px 0;font-size:11px;font-weight:850;color:var(--muted)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.region-detail{margin-top:12px;background:#fff4d5;border:2px solid #f4df9e;border-radius:16px;padding:13px}
+.detail-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.detail-title{font-weight:1000;font-size:18px}
+.tag{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;background:#eee7ff;color:#6144a8;font-size:11px;font-weight:1000}
+.meter{height:10px;background:#eee4d7;border-radius:99px;overflow:hidden;margin:8px 0}
+.meter>span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--orange),var(--pink));transition:width .3s}
+.action{border-radius:14px;padding:12px 15px;font-weight:1000;transition:transform .12s,filter .12s;box-shadow:0 4px 0 rgba(56,42,73,.12)}
+.action:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.action:active{transform:translateY(2px);box-shadow:none}
+.primary{background:var(--pink);color:white}
+.secondary{background:#eee7ff;color:#5c4499}
+.mint{background:var(--mint);color:#235747}
+.yellow{background:var(--yellow);color:#6e4d00}
+.action:disabled{opacity:.42;cursor:not-allowed;transform:none;box-shadow:none}
+.full{width:100%}
+.actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.log{display:flex;flex-direction:column;gap:8px;max-height:310px;overflow:auto}
+.log-item{display:flex;gap:9px;align-items:flex-start;background:#fff8ec;border-radius:13px;padding:10px;font-size:12px;line-height:1.55;font-weight:700}
+.log-emoji{font-size:19px;line-height:1.2}
+.research-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.research-card{background:#fff;border:2px solid var(--line);border-radius:20px;padding:15px;display:flex;flex-direction:column;gap:8px}
+.research-icon{font-size:36px;background:#fff2cb;border-radius:15px;width:62px;height:62px;display:grid;place-items:center}
+.research-card h3{font-size:17px;margin:0}
+.research-card p{font-size:12px;color:var(--muted);line-height:1.6;margin:0;flex:1}
+.research-card .cost{font-size:12px;font-weight:1000;color:#8b5d15}
+.research-card.done{border-color:#87d8b5;background:#f0fff7}
+.research-card.locked{opacity:.65}
+.recipe-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.recipe{border:2px solid var(--line);background:#fff;border-radius:18px;padding:13px;display:flex;flex-direction:column;gap:7px}
+.recipe.selected{border-color:var(--pink);box-shadow:0 0 0 3px #ffe0e8}
+.recipe .food{font-size:33px}
+.recipe strong{font-size:14px}
+.recipe p{font-size:11px;line-height:1.55;color:var(--muted);margin:0;flex:1}
+.recipe .recipe-tags{display:flex;flex-wrap:wrap;gap:4px}
+.recipe-tags span{background:#f4efff;padding:4px 6px;border-radius:7px;font-size:10px;font-weight:900}
+.recipe button{margin-top:3px}
+.recipe-lock{font-size:11px;color:#b15b68;font-weight:900}
+.big-message{border-radius:20px;padding:16px;background:#e9f9ed;border:2px solid #b7e5c2;font-weight:800;line-height:1.7}
+.toast{position:fixed;bottom:18px;left:50%;transform:translate(-50%,120px);background:var(--ink);color:white;padding:12px 18px;border-radius:14px;font-weight:900;box-shadow:0 6px 0 #c2b2d0;z-index:99;transition:transform .25s;max-width:calc(100vw - 24px);text-align:center}
+.toast.show{transform:translate(-50%,0)}
+.modal-backdrop{position:fixed;inset:0;background:#30243ccc;display:none;place-items:center;padding:18px;z-index:100}
+.modal-backdrop.show{display:grid}
+.modal{max-width:520px;width:100%;background:#fffdf7;border:4px solid white;border-radius:28px;padding:26px;text-align:center;box-shadow:0 12px 0 #c9b7d4}
+.modal .big{font-size:70px}
+.modal h2{font-size:30px;margin:4px 0 8px}
+.modal p{line-height:1.7;color:var(--muted);font-weight:700}
+.modal .actions-row{justify-content:center}
+.small-note{font-size:11px;color:var(--muted);line-height:1.6}
+footer{text-align:center;color:#9c8b9d;font-size:11px;font-weight:750;padding:25px 0 0}
+@media(max-width:800px){.hero{grid-template-columns:1fr .35fr}.hero-art{font-size:76px}.layout{grid-template-columns:1fr}.research-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.recipe-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.topbar{align-items:flex-start}.pill{font-size:11px;padding:7px 9px}.hero{grid-template-columns:1fr}.hero-art{display:none}.status-grid{grid-template-columns:repeat(2,1fr)}.research-grid,.recipe-grid{grid-template-columns:1fr}.tab{flex:1;padding:11px 8px;font-size:13px}.card{padding:13px}.region-label{font-size:9px}}
+</style>
 </head>
-
 <body>
-  <main class="container">
-    <h1>どっちが多い？</h1>
-    <p class="subtitle">直感を信じて選んでみよう！</p>
-
-    <div class="status">
-      <span id="count">第1問 / 全10問</span>
-      <span id="score">正解 0問</span>
+<header class="topbar">
+ <div class="logo"><span class="logo-burger">🍔</span><span>BURGER <span style="color:#ff6f91">PLANET!</span></span></div>
+ <div class="pill">🌎 おいしさ、世界征服。</div>
+</header>
+<main>
+ <section class="hero">
+  <div><div class="eyebrow">A TASTY WORLD ADVENTURE</div><h1>世界を、<span style="color:#ed5f83">おいしく</span>染めよう！</h1><p>君のバーガーを世界中の人に広めよう。研究して、レシピを発明して、地域の好みに合わせて進化！ お金も会社経営もなし。おいしさとひらめきだけで世界に挑戦だ。</p></div>
+  <div class="hero-art" aria-hidden="true">🍔🌍</div>
+ </section>
+ <section class="status-grid">
+  <div class="stat"><div class="label">🌍 ファンになった地域</div><div class="value" id="statRegions">1 <small>/ 9</small></div></div>
+  <div class="stat"><div class="label">💗 世界の人気</div><div class="value" id="statPopularity">4<small>%</small></div></div>
+  <div class="stat"><div class="label">💡 ひらめきポイント</div><div class="value" id="statPoints">5</div></div>
+  <div class="stat"><div class="label">⏳ ターン</div><div class="value" id="statTurn">1<small> / 20</small></div></div>
+ </section>
+ <nav class="nav" aria-label="ゲーム画面">
+  <button class="tab active" data-tab="map">🗺️ ワールド</button>
+  <button class="tab" data-tab="research">🧪 研究ラボ</button>
+  <button class="tab" data-tab="recipes">🍳 レシピ図鑑</button>
+ </nav>
+ <section class="panel active" id="panel-map">
+  <div class="layout">
+   <div class="card">
+    <div class="card-head"><h2>🗺️ バーガーの世界地図</h2><span class="tag" id="mapStatus">次の一手を選ぼう</span></div>
+    <div class="map-wrap">
+     <svg id="worldmap" viewBox="0 0 760 390" role="img" aria-label="世界の地域を選択する地図">
+      <rect width="760" height="390" fill="#d8f4ed"/>
+      <g opacity=".28" stroke="#9bd9cf" stroke-width="1">
+       <path d="M0 65H760M0 130H760M0 195H760M0 260H760M0 325H760"/>
+       <path d="M95 0V390M190 0V390M285 0V390M380 0V390M475 0V390M570 0V390M665 0V390"/>
+      </g>
+      <!-- simplified but recognizable continent silhouettes -->
+      <path class="land" d="M45 77 L65 49 104 35 137 45 159 59 190 66 211 89 197 110 172 117 160 140 143 151 135 180 114 197 96 176 90 148 73 128 54 112Z"/>
+      <path class="land" d="M171 178 L196 181 218 203 224 229 212 258 201 286 186 319 169 299 162 270 149 242 153 216Z"/>
+      <path class="land" d="M331 80 L356 66 380 73 396 88 389 106 365 111 349 100Z"/>
+      <path class="land" d="M354 113 L390 103 421 116 441 140 430 168 411 190 398 220 376 207 364 176 345 152Z"/>
+      <path class="land" d="M389 68 L420 51 456 47 489 57 514 53 539 64 570 65 601 81 634 90 662 108 654 128 622 132 603 148 579 143 560 161 537 151 515 162 496 148 470 150 450 134 430 126 419 103 397 97Z"/>
+      <path class="land" d="M430 154 L458 153 480 169 478 191 460 201 444 188Z"/>
+      <path class="land" d="M590 176 L614 167 642 175 661 193 650 214 625 220 607 207Z"/>
+      <path class="land" d="M646 252 L677 245 704 261 715 283 697 302 669 299 648 279Z"/>
+      <path class="land" d="M278 53 L290 43 300 51 297 67 284 72Z"/>
+      <g id="routeLines" fill="none" stroke="#ff8eaa" stroke-width="3" stroke-dasharray="5 6" opacity=".9"></g>
+      <g id="regionPins"></g>
+     </svg>
     </div>
-
-    <div class="progress">
-      <div id="bar"></div>
-    </div>
-
-    <p class="question">どちらの数が多いでしょう？</p>
-
-    <div class="choices">
-      <button class="choice" id="a" onclick="answer('a')"></button>
-      <button class="choice" id="b" onclick="answer('b')"></button>
-    </div>
-
-    <section id="result" aria-live="polite"></section>
-    <button class="main-button" id="next" onclick="nextQuestion()">
-      次の問題へ →
-    </button>
-  </main>
-
-  <script>
-    // 問題一覧：ここにある問題から毎回ランダムに10問を選ぶ
-    const questions = [
-      { a: "日本の都道府県", b: "アメリカの州", correct: "b", explanation: "日本は47都道府県、アメリカは50州です。" },
-      { a: "地球の海の面積", b: "地球の陸地の面積", correct: "a", explanation: "地球の表面の約71%を海が占めています。" },
-      { a: "成人の骨の数", b: "成人の筋肉の数", correct: "b", explanation: "成人の骨は通常約206本。筋肉は数百あるとされます。" },
-      { a: "世界の言語の数", b: "世界の国の数", correct: "a", explanation: "世界には数千の言語があります。国の数よりずっと多いです。" },
-      { a: "1兆秒", b: "3万年", correct: "a", explanation: "1兆秒は約3万1700年です。" },
-      { a: "日本の大学の数", b: "日本のプロ野球チーム数", correct: "a", explanation: "日本の大学は約800校、プロ野球の球団は12球団です。" },
-      { a: "地球から月までの距離", b: "地球一周の距離", correct: "a", explanation: "月までの平均距離は約38万km。地球一周は約4万kmです。" },
-      { a: "日本の出生数", b: "日本の死亡数", correct: "b", explanation: "近年の日本では、年間の死亡数が出生数を上回っています。" },
-      { a: "世界の海の面積", b: "世界の全陸地の面積", correct: "a", explanation: "海は地球の表面の約71%を占め、陸地より広いです。" },
-      { a: "日本の市町村の数", b: "日本の国会議員の定数", correct: "a", explanation: "市町村は約1700、国会議員の定数は衆参合計713です。" },
-      { a: "1時間の秒数", b: "1日の分数", correct: "a", explanation: "1時間は3600秒、1日は1440分です。" },
-      { a: "1週間の分数", b: "1日の分数", correct: "a", explanation: "1週間は10080分、1日は1440分です。" },
-      { a: "うるう年の日数", b: "平年の日数", correct: "a", explanation: "うるう年は366日、平年は365日です。" },
-      { a: "1メートルのセンチメートル数", b: "1フィートのインチ数", correct: "a", explanation: "1メートルは100センチメートル、1フィートは12インチです。" },
-      { a: "1キロメートルのメートル数", b: "1マイルのメートル数", correct: "b", explanation: "1キロメートルは1000メートル、1マイルは約1609メートルです。" },
-      { a: "1キログラムのグラム数", b: "1ポンドのグラム数", correct: "a", explanation: "1キログラムは1000グラム、1ポンドは約454グラムです。" },
-      { a: "円の角度", b: "直角の角度", correct: "a", explanation: "円は360度、直角は90度です。" },
-      { a: "六角形の辺の数", b: "八角形の辺の数", correct: "b", explanation: "六角形は6辺、八角形は8辺です。" },
-      { a: "1から10までの素数の個数", b: "1から10までの偶数の個数", correct: "b", explanation: "素数は4個、偶数は5個です。" },
-      { a: "2の10乗", b: "10の3乗", correct: "a", explanation: "2の10乗は1024、10の3乗は1000です。" },
-      { a: "7×8", b: "9×6", correct: "a", explanation: "7×8は56、9×6は54です。" },
-      { a: "15の2乗", b: "20×11", correct: "a", explanation: "15の2乗は225、20×11は220です。" },
-      { a: "90の半分", b: "120の3分の1", correct: "a", explanation: "90の半分は45、120の3分の1は40です。" },
-      { a: "200の25%", b: "150の30%", correct: "a", explanation: "200の25%は50、150の30%は45です。" },
-      { a: "3の3乗", b: "4の2乗", correct: "a", explanation: "3の3乗は27、4の2乗は16です。" },
-      { a: "1から10までの整数の合計", b: "10の2乗", correct: "b", explanation: "1から10までの合計は55、10の2乗は100です。" },
-      { a: "正方形の対角線の本数", b: "五角形の対角線の本数", correct: "b", explanation: "正方形の対角線は2本、五角形は5本です。" },
-      { a: "三角形の内角の合計", b: "正方形の1つの内角", correct: "a", explanation: "三角形の内角の合計は180度、正方形の内角は90度です。" },
-      { a: "円周率の約100倍", b: "円周率の約10倍", correct: "a", explanation: "円周率は約3.14なので、約100倍の方が大きいです。" },
-      { a: "81の平方根（正の値）", b: "64の立方根", correct: "a", explanation: "81の平方根は9、64の立方根は4です。" },
-      { a: "地球の直径", b: "月の直径", correct: "a", explanation: "地球の直径は約1万2742km、月は約3475kmです。" },
-      { a: "太陽の直径", b: "地球の直径", correct: "a", explanation: "太陽の直径は地球の約109倍です。" },
-      { a: "地球から月までの平均距離", b: "地球一周の距離", correct: "a", explanation: "月までの平均距離は約38万km、地球一周は約4万kmです。" },
-      { a: "エベレストの標高", b: "富士山の標高", correct: "a", explanation: "エベレストは約8849m、富士山は約3776mです。" },
-      { a: "太平洋の面積", b: "アフリカ大陸の面積", correct: "a", explanation: "太平洋は約1億6500万平方km、アフリカ大陸は約3000万平方kmです。" },
-      { a: "アジア大陸の面積", b: "ヨーロッパ大陸の面積", correct: "a", explanation: "アジアはヨーロッパよりはるかに広い大陸です。" },
-      { a: "南極大陸の面積", b: "オーストラリア大陸の面積", correct: "a", explanation: "南極大陸は約1400万平方km、オーストラリア大陸は約770万平方kmです。" },
-      { a: "太陽系の惑星の数", b: "曜日の数", correct: "a", explanation: "太陽系の惑星は8個、曜日は7つです。" },
-      { a: "日本の都道府県の数", b: "アメリカの州の数", correct: "b", explanation: "日本は47都道府県、アメリカは50州です。" },
-      { a: "日本の主要4島の数", b: "世界の大陸の数（一般的な区分）", correct: "b", explanation: "日本の主要4島は4つ、大陸は一般的に7つに分けます。" },
-      { a: "日本の国民の祝日の日数（年間）", b: "1年間の月の数", correct: "a", explanation: "日本の国民の祝日は年間16日、1年は12か月です。" },
-      { a: "衆議院の定数", b: "参議院の定数", correct: "a", explanation: "衆議院の定数は465、参議院の定数は248です。" },
-      { a: "ノーベル賞の伝統的な賞の分野数", b: "曜日の数", correct: "b", explanation: "ノーベル賞は経済学賞を含めて6分野、曜日は7つです。" },
-      { a: "虹の色の数（一般的な数え方）", b: "光の三原色の数", correct: "a", explanation: "虹は一般的に7色、光の三原色は赤・緑・青の3色です。" },
-      { a: "音楽で使う基本的な音名の数（ドレミ）", b: "半音を含む1オクターブの音の数", correct: "b", explanation: "基本的な音名は7つ、半音を含めると12音です。" },
-      { a: "ピアノの鍵盤の数", b: "チェス盤のマスの数", correct: "a", explanation: "一般的なピアノは88鍵、チェス盤は64マスです。" },
-      { a: "標準的なトランプの枚数（ジョーカーなし）", b: "チェス盤のマスの数", correct: "b", explanation: "トランプは52枚、チェス盤は64マスです。" },
-      { a: "バレーボールのコート上の1チームの人数", b: "バスケットボールのコート上の1チームの人数", correct: "a", explanation: "バレーボールは6人、バスケットボールは5人です。" },
-      { a: "サッカーの1チームの試合中の選手数（通常）", b: "バスケットボールの1チームのコート上の人数", correct: "a", explanation: "サッカーは通常11人、バスケットボールは5人です。" },
-      { a: "野球の通常の試合のイニング数", b: "サッカーの試合の前後半の数", correct: "a", explanation: "野球は通常9イニング、サッカーは前半と後半の2つです。" },
-      { a: "チェス盤のマスの数", b: "ドミノ（ダブル6）の牌の枚数", correct: "a", explanation: "チェス盤は64マス、ダブル6のドミノは28枚です。" },
-      { a: "ギターの標準的な弦の数", b: "バイオリンの弦の数", correct: "a", explanation: "一般的なギターは6弦、バイオリンは4弦です。" },
-      { a: "周期表にある元素の数", b: "太陽系の惑星の数", correct: "a", explanation: "現在確認されている元素は118種類、惑星は8個です。" },
-      { a: "水分子を構成する原子の数", b: "水分子に含まれる元素の種類数", correct: "a", explanation: "水分子は水素2個と酸素1個の計3原子で、元素は2種類です。" },
-      { a: "1バイトのビット数", b: "16進数1桁で表せるビット数", correct: "a", explanation: "1バイトは8ビット、16進数1桁は4ビットに相当します。" },
-      { a: "IPv4アドレスのビット数", b: "IPv6アドレスのビット数", correct: "b", explanation: "IPv4は32ビット、IPv6は128ビットです。" },
-      { a: "2進数で使う数字の種類", b: "10進数で使う数字の種類", correct: "b", explanation: "2進数は0と1の2種類、10進数は0から9の10種類です。" },
-      { a: "10進法の1キロバイトのバイト数", b: "1キビバイトのバイト数", correct: "b", explanation: "1キロバイトは1000バイト、1キビバイトは1024バイトです。" },
-      { a: "A4用紙の幅（mm）", b: "A4用紙の高さ（mm）", correct: "b", explanation: "A4用紙は幅210mm、高さ297mmです。" },
-      { a: "1米ガロンのリットル数", b: "1リットル", correct: "a", explanation: "1米ガロンは約3.785リットルです。" },
-      { a: "1ダースの個数", b: "1グロスの個数", correct: "b", explanation: "1ダースは12個、1グロスは144個です。" },
-      { a: "ベーカーズダースの個数", b: "1ダースの個数", correct: "a", explanation: "ベーカーズダースは13個、1ダースは12個です。" },
-      { a: "2ダースの卵の個数", b: "20個", correct: "a", explanation: "2ダースは24個です。" },
-      { a: "ローマ数字のXの値", b: "ローマ数字のVの値", correct: "a", explanation: "Xは10、Vは5を表します。" },
-      { a: "ローマ数字のMの値", b: "ローマ数字のDの値", correct: "a", explanation: "Mは1000、Dは500を表します。" },
-      { a: "1年で31日ある月の数", b: "1年で30日ある月の数", correct: "a", explanation: "31日ある月は7つ、30日ある月は4つです。" },
-      { a: "平年の2月の日数", b: "2週間の日数", correct: "a", explanation: "平年の2月は28日、2週間は14日です。" },
-      { a: "9月の日数", b: "10月の日数", correct: "b", explanation: "9月は30日、10月は31日です。" },
-      { a: "3時間の分数", b: "2分間の秒数", correct: "a", explanation: "3時間は180分、2分間は120秒です。" },
-      { a: "5分間の秒数", b: "1時間の分数", correct: "a", explanation: "5分間は300秒、1時間は60分です。" },
-      { a: "1週間の休日（土日）の数", b: "平日の数", correct: "b", explanation: "土日は2日、平日は5日です。" },
-      { a: "1メートル四方の面積（平方センチメートル）", b: "1メートルの長さ（センチメートル）", correct: "a", explanation: "1平方メートルは10000平方センチメートル、1メートルは100センチメートルです。" },
-      { a: "正方形の1辺が10のときの面積", b: "縦9、横11の長方形の面積", correct: "a", explanation: "正方形は100、長方形は99です。" },
-      { a: "半径5の円の直径", b: "半径5の円の半径", correct: "a", explanation: "直径は半径の2倍なので10です。" },
-      { a: "正六角形の1つの内角", b: "直角", correct: "a", explanation: "正六角形の内角は120度、直角は90度です。" },
-      { a: "五角形の辺の数", b: "六角形の辺の数", correct: "b", explanation: "五角形は5辺、六角形は6辺です。" },
-      { a: "三角形の辺の数", b: "四角形の辺の数", correct: "b", explanation: "三角形は3辺、四角形は4辺です。" },
-      { a: "正方形の対角線の本数", b: "三角形の対角線の本数", correct: "a", explanation: "正方形には対角線が2本あります。三角形には対角線がありません。" },
-      { a: "円の直径が10のときの半径", b: "円の直径が10のときの直径", correct: "b", explanation: "半径は5、直径は10です。" },
-      { a: "成人の通常の骨の数", b: "成人の永久歯の数（親知らずを含む）", correct: "a", explanation: "成人の骨は通常約206本、永久歯は最大32本です。" },
-      { a: "乳児の骨の数（出生時の目安）", b: "成人の骨の数", correct: "a", explanation: "乳児の骨は出生時に約270個あり、成長とともに一部が融合します。" },
-      { a: "人間の心臓の部屋の数", b: "人間の肺の数", correct: "a", explanation: "心臓には4つの部屋があり、肺は左右2つです。" },
-      { a: "人間の脳の大脳半球の数", b: "人間の脳神経の対の数", correct: "b", explanation: "大脳半球は左右2つ、脳神経は12対あります。" },
-      { a: "右肺の葉の数", b: "左肺の葉の数", correct: "a", explanation: "右肺は3葉、左肺は2葉です。" },
-      { a: "ABO式血液型の種類数", b: "Rh式血液型の一般的な区分数", correct: "a", explanation: "ABO式はA・B・AB・Oの4種類、Rh式は一般に陽性・陰性の2区分で説明されます。" },
-      { a: "DNAの通常の鎖の数", b: "一般的なRNAの鎖の数", correct: "a", explanation: "DNAは通常二本鎖、RNAは通常一本鎖です。" },
-      { a: "地球の自然衛星の数", b: "火星の自然衛星の数", correct: "b", explanation: "地球の月は1個、火星の衛星はフォボスとダイモスの2個です。" },
-      { a: "水星の自然衛星の数", b: "火星の自然衛星の数", correct: "b", explanation: "水星には衛星がなく、火星には2個あります。" },
-      { a: "金星の自転周期（日数）", b: "地球の自転周期（日数）", correct: "a", explanation: "金星の自転周期は約243地球日、地球は約1日です。" },
-      { a: "1光年の距離（km）", b: "地球から太陽までの平均距離（km）", correct: "a", explanation: "1光年は約9兆4600億km、地球と太陽の距離は約1億5000万kmです。" },
-      { a: "木星の自然衛星の数", b: "地球の自然衛星の数", correct: "a", explanation: "木星には多数の衛星が確認されていますが、地球の自然衛星は月の1個です。" },
-      { a: "地球の表面で海が占める割合", b: "地球の表面で陸地が占める割合", correct: "a", explanation: "地球の表面の約71%が海、約29%が陸地です。" },
-      { a: "水の凍る温度（摂氏）", b: "水の沸騰する温度（摂氏、標準気圧）", correct: "b", explanation: "標準気圧では水は0℃で凍り、100℃で沸騰します。" },
-      { a: "水素の原子番号", b: "酸素の原子番号", correct: "b", explanation: "水素の原子番号は1、酸素は8です。" },
-      { a: "炭素原子の電子数（中性原子）", b: "酸素原子の電子数（中性原子）", correct: "b", explanation: "中性の炭素原子は電子6個、酸素原子は8個です。" },
-      { a: "光の速さ（km/s）", b: "空気中の音の速さ（m/s）", correct: "a", explanation: "光は約30万km/s、空気中の音は約343m/sです。" },
-      { a: "日本語のひらがなの基本的な文字数（一般的な数え方）", b: "英語のアルファベットの文字数", correct: "a", explanation: "ひらがなは一般に46文字、英語のアルファベットは26文字です。" },
-      { a: "オリンピックの五輪の数", b: "世界の大陸の数（一般的な区分）", correct: "b", explanation: "オリンピックの輪は5つ、大陸は一般的に7つです。" },
-      { a: "世界の海の面積", b: "世界の陸地の面積", correct: "a", explanation: "地球の表面では、海の面積が陸地の面積を大きく上回ります。" },
-      { a: "ロシアの国土面積", b: "カナダの国土面積", correct: "a", explanation: "ロシアは約1710万平方km、カナダは約998万平方kmです。" },
-      { a: "日本の年間の死亡数", b: "日本の年間の出生数", correct: "a", explanation: "近年の日本では、年間の死亡数が出生数を上回っています。" },
-      { a: "日本の大学の数", b: "日本のプロ野球球団の数", correct: "a", explanation: "日本の大学は約800校、プロ野球球団は12球団です。" },
-      { a: "日本の市町村の数", b: "日本の国会議員の定数（衆参合計）", correct: "a", explanation: "市町村は約1700、国会議員の定数は衆参合計713です。" },
-      { a: "地球の海の面積", b: "地球の陸地の面積", correct: "a", explanation: "地球の表面の約71%を海が占めています。" },
-      { a: "成人の骨の数", b: "成人の筋肉の数", correct: "b", explanation: "成人の骨は通常約206本。筋肉は数百あるとされます。" },
-      { a: "世界の言語の数", b: "世界の国の数", correct: "a", explanation: "世界には数千の言語があります。国の数よりずっと多いです。" },
-      { a: "1兆秒", b: "3万年を秒に換算した時間", correct: "a", explanation: "1兆秒は約3万1700年です。" },
-      { a: "地球から月までの距離", b: "地球一周の距離", correct: "a", explanation: "月までの平均距離は約38万km。地球一周は約4万kmです。" },
-      { a: "世界の海の面積", b: "世界の全陸地の面積", correct: "a", explanation: "海は地球の表面の約71%を占め、陸地より広いです。" },
-      { a: "日本の出生数", b: "日本の死亡数", correct: "b", explanation: "近年の日本では、年間の死亡数が出生数を上回っています。" },
-      { a: "日本の大学の数", b: "日本のプロ野球チーム数", correct: "a", explanation: "日本の大学は約800校、プロ野球の球団は12球団です。" },
-      { a: "地球の直径", b: "月の直径", correct: "a", explanation: "地球は月より直径が大きい天体です。" },
-      { a: "太陽の直径", b: "地球の直径", correct: "a", explanation: "太陽の直径は地球の約109倍です。" },
-      { a: "地球の表面の海の割合", b: "地球の表面の陸地の割合", correct: "a", explanation: "海は約71%、陸地は約29%です。" },
-      { a: "1年の日数（平年）", b: "1年の週数（約）", correct: "a", explanation: "平年は365日、1年は約52週間です。" },
-      { a: "1分間の秒数", b: "1時間の秒数", correct: "b", explanation: "1分は60秒、1時間は3600秒です。" }
-    ];
-
-    let current = 0;
-    let score = 0;
-    let finished = false;
-    let shuffledQuestions = [];
-
-    const el = id => document.getElementById(id);
-    const TOTAL_PER_GAME = 10;
-
-    // 問題一覧からランダムに10問を選ぶ
-    function shuffleQuestions() {
-      const pool = [...questions];
-
-      // Fisher-Yates方式でシャッフル
-      for (let i = pool.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [pool[i], pool[j]] = [pool[j], pool[i]];
-      }
-
-      shuffledQuestions = pool.slice(0, Math.min(TOTAL_PER_GAME, pool.length));
-    }
-
-    function showQuestion() {
-      const q = shuffledQuestions[current];
-
-      el("count").textContent =
-        `第${current + 1}問 / 全${shuffledQuestions.length}問`;
-
-      el("score").textContent = `正解 ${score}問`;
-
-      el("bar").style.width =
-        `${current / shuffledQuestions.length * 100}%`;
-
-      el("a").innerHTML = `<span class="symbol">🅰️</span>${q.a}`;
-      el("b").innerHTML = `<span class="symbol">🅱️</span>${q.b}`;
-
-      el("a").disabled = false;
-      el("b").disabled = false;
-
-      el("a").style.display = "";
-      el("b").style.display = "";
-
-      el("a").style.borderColor = "";
-      el("b").style.borderColor = "";
-
-      el("result").style.display = "none";
-      el("next").style.display = "none";
-      el("next").textContent = "次の問題へ →";
-    }
-
-    function answer(selected) {
-      if (el("a").disabled || finished) return;
-
-      // 抽選された問題から現在の問題を取得する
-      const q = shuffledQuestions[current];
-      const correct = selected === q.correct;
-
-      if (correct) score++;
-
-      el("a").disabled = true;
-      el("b").disabled = true;
-
-      el(q.correct).style.borderColor = "#28a66a";
-
-      if (!correct) {
-        el(selected).style.borderColor = "#e05c65";
-      }
-
-      el("score").textContent = `正解 ${score}問`;
-
-      el("bar").style.width =
-        `${(current + 1) / shuffledQuestions.length * 100}%`;
-
-      el("result").innerHTML = `
-        <h2>${correct ? "🎉 正解！" : "💡 残念！"}</h2>
-        <strong>正解：</strong>${q[q.correct]}<br>
-        ${q.explanation}
-      `;
-
-      el("result").style.display = "block";
-
-      el("next").textContent =
-        current === shuffledQuestions.length - 1
-          ? "結果を見る →"
-          : "次の問題へ →";
-
-      el("next").style.display = "inline-block";
-    }
-
-    function nextQuestion() {
-      if (current < shuffledQuestions.length - 1) {
-        current++;
-        showQuestion();
-      } else {
-        showFinalResult();
-      }
-    }
-
-    function showFinalResult() {
-      finished = true;
-
-      el("count").textContent = "ゲーム終了！";
-      el("bar").style.width = "100%";
-
-      el("a").style.display = "none";
-      el("b").style.display = "none";
-
-      el("result").innerHTML = `
-        <h2>🏆 あなたの結果</h2>
-        <p style="font-size:28px;font-weight:bold;text-align:center">
-          ${shuffledQuestions.length}問中 ${score}問正解！
-        </p>
-        <p style="text-align:center">
-          ${
-            score === shuffledQuestions.length
-              ? "全問正解！すごい！"
-              : score >= 7
-                ? "素晴らしい成績！"
-                : score >= 4
-                  ? "なかなかの推理力！"
-                  : "次はもっと正解を目指そう！"
-          }
-        </p>
-      `;
-
-      el("result").style.display = "block";
-      el("next").textContent = "もう一度遊ぶ ↻";
-      el("next").onclick = restart;
-      el("next").style.display = "inline-block";
-    }
-
-    function restart() {
-      current = 0;
-      score = 0;
-      finished = false;
-
-      shuffleQuestions();
-
-      el("next").onclick = nextQuestion;
-      showQuestion();
-    }
-
-    // ゲーム開始
-    shuffleQuestions();
-    showQuestion();
-  </script>
+    <div class="map-legend"><span><i class="dot" style="background:#ff6f91"></i>人気拡大中</span><span><i class="dot" style="background:#ffd45c"></i>進出できる</span><span><i class="dot" style="background:#b6b1bd"></i>まだ遠い</span></div>
+    <div class="region-detail" id="regionDetail"></div>
+   </div>
+   <aside class="card">
+    <div class="card-head"><h2>📣 世界のニュース</h2><span class="tag">LIVE</span></div>
+    <div class="log" id="newsLog" aria-live="polite"></div>
+    <div style="margin-top:15px" class="big-message" id="tipBox">💡 ヒント：研究で「ふわふわバンズ」を開発すると、人気が広がりやすくなるよ！</div>
+    <div class="actions-row"><button class="action yellow full" id="endTurnBtn">☀️ ターンを進める</button></div>
+    <p class="small-note">1ターンに2アクション。地域への進出、研究、レシピ変更で使うよ。ターン終了時に人気が広がり、ひらめきポイントが増える！</p>
+   </aside>
+  </div>
+ </section>
+ <section class="panel" id="panel-research">
+  <div class="card" style="margin-bottom:15px">
+   <div class="card-head"><h2>🧪 研究ラボ</h2><span class="tag">ひらめきで進化！</span></div>
+   <p class="sub">ひらめきポイントを使って、バーガーの新しい能力を開放しよう。研究はお金ではなく、世界の人気とターン終了で増えるよ。</p>
+   <div class="status-grid" style="margin:13px 0 0;grid-template-columns:repeat(3,1fr)">
+    <div class="stat"><div class="label">💡 使用できるポイント</div><div class="value" id="labPoints">5</div></div>
+    <div class="stat"><div class="label">🔬 研究した能力</div><div class="value" id="labDone">0<small> / 9</small></div></div>
+    <div class="stat"><div class="label">🍔 現在のレシピ</div><div class="value" id="labRecipe" style="font-size:17px">クラシック</div></div>
+   </div>
+  </div>
+  <div class="research-grid" id="researchGrid"></div>
+ </section>
+ <section class="panel" id="panel-recipes">
+  <div class="card">
+   <div class="card-head"><h2>🍳 レシピ図鑑</h2><span class="tag">組み合わせがカギ</span></div>
+   <p class="sub" style="margin-bottom:14px">レシピを選んでバーガーを切り替えよう。地域によって人気が変わるよ。新しいレシピは研究で開放！</p>
+   <div class="recipe-grid" id="recipeGrid"></div>
+  </div>
+ </section>
+ <footer>BURGER PLANET! · おいしさで世界をつなごう · これは架空のゲーム内ルールです</footer>
+</main>
+<div class="toast" id="toast"></div>
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+ <div class="modal"><div class="big" id="modalEmoji">🏆</div><h2 id="modalTitle">世界に広まった！</h2><p id="modalText"></p><div class="actions-row"><button class="action primary" id="restartBtn">🔁 もう一度遊ぶ</button><button class="action secondary" id="closeModalBtn">地図を見る</button></div></div>
+</div>
+<script>
+"use strict";
+const REGIONS = [
+ {id:"na",name:"北アメリカ",emoji:"🗽",x:142,y:112,neighbors:["sa","eu"],accept:1,need:0,kind:"classic",desc:"定番のボリューム系が人気。チーズとダブルパティが好相性。"},
+ {id:"sa",name:"南アメリカ",emoji:"🌴",x:190,y:236,neighbors:["na","eu"],accept:0,need:1,kind:"spicy",desc:"スパイスやグリルの香ばしさが人気。"},
+ {id:"eu",name:"ヨーロッパ",emoji:"🏰",x:375,y:112,neighbors:["na","sa","me","af","in"],accept:0,need:1,kind:"cheese",desc:"チーズや素材の味を生かしたレシピが人気。"},
+ {id:"me",name:"湾岸地域",emoji:"🌙",x:430,y:155,neighbors:["eu","af","in","ea"],accept:0,need:2,kind:"chicken",desc:"このゲームでは一部の市場に厳格な豚肉規制があるよ。鶏肉・植物性レシピで挑戦しよう。"},
+ {id:"af",name:"アフリカ",emoji:"🦁",x:408,y:218,neighbors:["eu","me","in"],accept:0,need:1,kind:"spicy",desc:"スパイスの効いた味が人気。地域ごとの好みを見極めよう。"},
+ {id:"in",name:"南アジア",emoji:"🪷",x:493,y:177,neighbors:["eu","me","af","ea","sea"],accept:0,need:2,kind:"veggie",desc:"ベジタリアン向けの選択肢やスパイスが強み。"},
+ {id:"ea",name:"東アジア",emoji:"🏯",x:579,y:121,neighbors:["me","in","sea","oc"],accept:0,need:2,kind:"teriyaki",desc:"照り焼きやうまみのあるソースが人気。"},
+ {id:"sea",name:"東南アジア",emoji:"🏝️",x:574,y:195,neighbors:["in","ea","oc"],accept:0,need:3,kind:"chicken",desc:"チキンと甘辛いソースが人気。豚肉規制のある市場もあるのでレシピに注意。"},
+ {id:"oc",name:"オセアニア",emoji:"🦘",x:672,y:274,neighbors:["ea","sea"],accept:0,need:3,kind:"classic",desc:"グリルの香ばしさやボリューム感が人気。"}
+];
+const RESEARCH = [
+ {id:"bun",name:"ふわふわバンズ",icon:"🍞",cost:3,desc:"食べやすさがアップ。毎ターンの人気拡大が少し強くなる。",effect:"spread",value:1},
+ {id:"cheese",name:"とろ〜りチーズ",icon:"🧀",cost:3,desc:"チーズ好きの地域で人気ボーナス。",effect:"cheese",value:1},
+ {id:"spice",name:"スパイスミックス",icon:"🌶️",cost:4,desc:"スパイシーな地域への進出が得意になる。",effect:"spice",value:1},
+ {id:"chicken",name:"チキンパティ",icon:"🍗",cost:4,desc:"豚肉を使わない新レシピの基本。",effect:"chicken",value:1},
+ {id:"veggie",name:"プラントパティ",icon:"🥬",cost:4,desc:"野菜好きの地域で人気。食の制限にも対応しやすい。",effect:"veggie",value:1},
+ {id:"teriyaki",name:"照り焼きソース",icon:"🍯",cost:4,desc:"東アジア・東南アジアで人気ボーナス。",effect:"teriyaki",value:1},
+ {id:"global",name:"クセになる香り",icon:"✨",cost:6,desc:"世界中で話題に。ターン終了時の人気拡大が大きくなる。",effect:"spread",value:2,requires:["bun"]},
+ {id:"fresh",name:"シャキシャキ野菜",icon:"🥒",cost:5,desc:"野菜系レシピがさらに強くなる。",effect:"veggie",value:2,requires:["veggie"]},
+ {id:"secret",name:"秘伝のソース",icon:"🧪",cost:7,desc:"どんな地域でも受け入れられやすい万能ソース。",effect:"universal",value:2,requires:["teriyaki"]}
+];
+const RECIPES = [
+ {id:"classic",name:"クラシック",icon:"🍔",needs:[],tags:["定番","バランス"],kind:"classic",desc:"王道のビーフ＆チーズ。北アメリカ・オセアニア向け。",pork:false},
+ {id:"double",name:"ダブルチーズ",icon:"🍔",needs:["cheese"],tags:["チーズ","ボリューム"],kind:"cheese",desc:"チーズ好きの地域で大人気。",pork:false},
+ {id:"spicy",name:"ファイアースパイス",icon:"🌶️",needs:["spice"],tags:["辛い","刺激"],kind:"spicy",desc:"南米・アフリカで人気が伸びる。",pork:false},
+ {id:"chicken",name:"クリスピーチキン",icon:"🍗",needs:["chicken"],tags:["チキン","サクサク"],kind:"chicken",desc:"鶏肉のサクサク食感。豚肉を使わない選択肢。",pork:false},
+ {id:"veggie",name:"グリーンガーデン",icon:"🥬",needs:["veggie"],tags:["野菜","プラント"],kind:"veggie",desc:"野菜と植物性パティ。幅広い好みに対応。",pork:false},
+ {id:"teriyaki",name:"てりやきスマイル",icon:"🍯",needs:["teriyaki","chicken"],tags:["甘辛","うまみ"],kind:"teriyaki",desc:"照り焼きチキンで東アジア・東南アジアを狙おう。",pork:false},
+ {id:"bacon",name:"ベーコン爆盛り",icon:"🥓",needs:["cheese"],tags:["豚肉","濃厚"],kind:"classic",desc:"濃厚ベーコン入り。豚肉規制の厳しい市場には絶対に持ち込まないこと！",pork:true},
+ {id:"secret",name:"ひみつの万能バーガー",icon:"🌈",needs:["secret"],tags:["秘伝","万能"],kind:"universal",desc:"秘伝のソースで世界のいろいろな好みに対応。",pork:false}
+];
+const state = {turn:1,maxTurns:20,actions:2,points:5,recipe:"classic",researched:[],regions:{na:{accept:18,unlocked:true}},selected:"na",news:[],ended:false,won:false};
+const $=id=>document.getElementById(id);
+function region(id){return REGIONS.find(r=>r.id===id)}
+function research(id){return RESEARCH.find(r=>r.id===id)}
+function recipe(id){return RECIPES.find(r=>r.id===id)}
+function isResearched(id){return state.researched.includes(id)}
+function hasRegion(id){return !!state.regions[id]?.unlocked}
+function currentRecipe(){return recipe(state.recipe)||RECIPES[0]}
+function addNews(emoji,text){state.news.unshift({emoji,text,turn:state.turn});state.news=state.news.slice(0,10);renderNews()}
+function toast(text){const el=$("toast");el.textContent=text;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2400)}
+function spendAction(){if(state.actions<=0){toast("アクション切れ！「ターンを進める」を押してね");return false}state.actions--;return true}
+function totalRegions(){return Object.keys(state.regions).filter(k=>state.regions[k].unlocked).length}
+function totalPopularity(){let sum=0;REGIONS.forEach(r=>sum+=(state.regions[r.id]?.accept||0));return Math.round(sum/REGIONS.length)}
+function affinity(r,rec){
+ if(rec.kind==="universal"||isResearched("secret"))return 3;
+ if(r.kind===rec.kind)return 2;
+ if(rec.kind==="chicken"&&(r.kind==="veggie"||r.kind==="teriyaki"))return 1;
+ if(rec.kind==="classic"&&r.kind==="cheese"&&isResearched("cheese"))return 1;
+ return 0;
+}
+function regionIsStrict(id){return id==="me"||id==="sea"}
+function getEligibleRegions(){return REGIONS.filter(r=>!hasRegion(r.id)&&r.neighbors.some(n=>hasRegion(n)))}
+function renderStats(){
+ $("statRegions").innerHTML=`${totalRegions()} <small>/ ${REGIONS.length}</small>`;
+ $("statPopularity").innerHTML=`${totalPopularity()}<small>%</small>`;
+ $("statPoints").textContent=state.points;
+ $("statTurn").innerHTML=`${Math.min(state.turn,state.maxTurns)}<small> / ${state.maxTurns}</small>`;
+ $("labPoints").textContent=state.points;
+ $("labDone").innerHTML=`${state.researched.length}<small> / ${RESEARCH.length}</small>`;
+ $("labRecipe").textContent=currentRecipe().name;
+ $("mapStatus").textContent=`アクション ${state.actions} / 2`;
+ $("endTurnBtn").disabled=state.ended;
+}
+function renderMap(){
+ const g=$("regionPins");g.innerHTML="";
+ const route=$("routeLines");route.innerHTML="";
+ const drawn=new Set();
+ REGIONS.forEach(r=>{
+  if(!hasRegion(r.id))return;
+  r.neighbors.forEach(nid=>{if(!hasRegion(nid))return;const pair=[r.id,nid].sort().join("-");if(drawn.has(pair))return;drawn.add(pair);const n=region(nid);route.insertAdjacentHTML("beforeend",`<path d="M${r.x} ${r.y} Q ${(r.x+n.x)/2} ${(r.y+n.y)/2-12} ${n.x} ${n.y}"/>`)});
+ });
+ REGIONS.forEach(r=>{
+  const unlocked=hasRegion(r.id),eligible=getEligibleRegions().some(x=>x.id===r.id),sel=state.selected===r.id;
+  const fill=unlocked?"#ff6f91":eligible?"#ffd45c":"#b6b1bd";
+  const grp=document.createElementNS("http://www.w3.org/2000/svg","g");
+  grp.innerHTML=`<circle class="region-pin ${!unlocked&&!eligible?"locked":""}" cx="${r.x}" cy="${r.y}" r="${sel?15:unlocked?12:eligible?11:8}" fill="${fill}"></circle><text class="region-label" x="${r.x}" y="${r.y+27}">${r.name}</text>${unlocked?`<text x="${r.x}" y="${r.y+4}" text-anchor="middle" font-size="12">♥</text>`:""}`;
+  grp.style.cursor="pointer";grp.setAttribute("tabindex","0");grp.setAttribute("role","button");grp.setAttribute("aria-label",r.name);grp.addEventListener("click",()=>selectRegion(r.id));grp.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectRegion(r.id)}});
+  g.appendChild(grp);
+ });
+ renderRegionDetail();
+}
+function selectRegion(id){state.selected=id;renderMap()}
+function renderRegionDetail(){
+ const r=region(state.selected)||REGIONS[0],unlocked=hasRegion(r.id),eligible=getEligibleRegions().some(x=>x.id===r.id),rec=currentRecipe();
+ const affinityScore=affinity(r,rec);
+ let rule="";
+ if(regionIsStrict(r.id)&&rec.pork)rule=`<p style="color:#b3314f;font-weight:950;margin:9px 0">🚫 豚肉規制！このレシピでは進出できない。別のレシピに切り替えてね。</p>`;
+ else if(regionIsStrict(r.id))rule=`<p style="color:#398364;font-weight:900;margin:9px 0">🛡️ 規制チェック：現在のレシピは豚肉不使用。進出OK！</p>`;
+ let btn="";
+ if(unlocked)btn=`<button class="action mint full" disabled>💗 ファンが増えている地域</button>`;
+ else if(!eligible)btn=`<button class="action secondary full" disabled>🔒 隣の地域から広げよう</button>`;
+ else if(rec.pork&&regionIsStrict(r.id))btn=`<button class="action primary full" id="expandBtn">⚠️ 豚肉入りで進出を強行する（危険！）</button>`;
+ else btn=`<button class="action primary full" id="expandBtn">🚀 ${r.name}にバーガーを広める（1アクション）</button>`;
+ const accept=state.regions[r.id]?.accept||0;
+ $("regionDetail").innerHTML=`<div class="detail-top"><div><div class="detail-title">${r.emoji} ${r.name}</div><div class="sub">${unlocked?"ファン拡大中":eligible?"進出可能！":"まだ遠い地域"}</div></div><span class="tag">${unlocked?"❤️ "+accept+"%":"相性 "+(affinityScore>0?"◎":"○")}</span></div><p class="sub" style="margin:8px 0">${r.desc}</p>${unlocked?`<div class="sub">地域の人気</div><div class="meter"><span style="width:${accept}%"></span></div>`:""}${rule}${btn}`;
+ const b=$("expandBtn");if(b)b.addEventListener("click",()=>expandRegion(r.id));
+}
+function expandRegion(id){
+ const r=region(id),rec=currentRecipe();
+ if(!r||hasRegion(id))return;
+ if(!getEligibleRegions().some(x=>x.id===id)){toast("まずは隣の地域に進出しよう");return}
+ if(rec.pork&&regionIsStrict(id)){showGameOver("🚫","輸出ストップ！","豚肉入りの「"+rec.name+"」を"+r.name+"に持ち込もうとしたため、ゲーム内の厳格な輸入ルールに違反！ 別のレシピを選んでやり直そう。");return}
+ if(!spendAction())return;
+ const score=affinity(r,rec);
+ const start=20+score*12+(isResearched("bun")?8:0)+(isResearched("spice")&&r.kind==="spicy"?12:0)+(isResearched("veggie")&&r.kind==="veggie"?12:0);
+ state.regions[id]={unlocked:true,accept:Math.min(70,start)};
+ addNews("🚀",`${r.name}に「${rec.name}」が上陸！ ${score>1?"味の相性がバッチリ！":"これからファンを増やそう。"}`);
+ state.points+=1+Math.floor(start/35);
+ renderAll();
+ if(totalRegions()===REGIONS.length&&totalPopularity()>=45)showWin();
+}
+function renderResearch(){
+ const grid=$("researchGrid");grid.innerHTML="";
+ RESEARCH.forEach(t=>{
+  const done=isResearched(t.id),prereq=(t.requires||[]).every(isResearched),can=state.points>=t.cost&&prereq&&!state.ended;
+  const card=document.createElement("article");card.className="research-card"+(done?" done":"")+(prereq?"":" locked");
+  card.innerHTML=`<div class="research-icon">${done?"✅":t.icon}</div><h3>${t.name}</h3><p>${t.desc}</p><div class="cost">${done?"研究完了":`💡 ${t.cost} ポイント`}</div>${!prereq?`<div class="recipe-lock">先に必要な研究を開放</div>`:""}<button class="action ${done?"mint":"secondary"} full" ${done||!can?"disabled":""}>${done?"開放済み":prereq?"研究する":"🔒 ロック中"}</button>`;
+  const b=card.querySelector("button");b.addEventListener("click",()=>doResearch(t.id));grid.appendChild(card);
+ });
+}
+function doResearch(id){
+ const t=research(id);if(!t||isResearched(id))return;
+ if(!(t.requires||[]).every(isResearched)){toast("必要な研究を先に開放してね");return}
+ if(state.points<t.cost){toast("ひらめきポイントが足りないよ");return}
+ if(!spendAction())return;
+ state.points-=t.cost;state.researched.push(id);
+ addNews(t.icon,`研究成功！「${t.name}」を開放したよ。`);
+ toast(`${t.name}を研究した！`);
+ renderAll();
+}
+function renderRecipes(){
+ const grid=$("recipeGrid");grid.innerHTML="";
+ RECIPES.forEach(r=>{
+  const unlocked=r.needs.every(isResearched),sel=state.recipe===r.id;
+  const el=document.createElement("article");el.className="recipe"+(sel?" selected":"");
+  el.innerHTML=`<div class="food">${r.icon}</div><strong>${r.name}${sel?" ✓":""}</strong><div class="recipe-tags">${r.tags.map(t=>`<span>${t}</span>`).join("")}</div><p>${r.desc}</p>${r.pork?`<div class="recipe-lock">⚠️ 一部地域では持ち込み禁止</div>`:""}${!unlocked?`<div class="recipe-lock">🔒 必要な研究：${r.needs.map(id=>research(id)?.name||id).join("、")}</div>`:""}<button class="action ${sel?"mint":"secondary"} full" ${!unlocked||sel||state.ended?"disabled":""}>${sel?"使用中":unlocked?"このレシピに変更":"未開放"}</button>`;
+  el.querySelector("button").addEventListener("click",()=>changeRecipe(r.id));grid.appendChild(el);
+ });
+}
+function changeRecipe(id){
+ const r=recipe(id);if(!r||state.recipe===id||!r.needs.every(isResearched))return;
+ if(!spendAction())return;
+ state.recipe=id;addNews(r.icon,`新レシピ「${r.name}」にチェンジ！ 地域の好みを見て広めよう。`);
+ renderAll();toast(`レシピを${r.name}に変更！`);
+}
+function renderNews(){
+ const el=$("newsLog");
+ if(!state.news.length){el.innerHTML=`<div class="log-item"><span class="log-emoji">👋</span><span>世界へようこそ！最初の地域からバーガーを広めよう。</span></div>`;return}
+ el.innerHTML=state.news.map(n=>`<div class="log-item"><span class="log-emoji">${n.emoji}</span><span><span style="color:#ad7790;font-size:10px">TURN ${n.turn}</span><br>${n.text}</span></div>`).join("");
+}
+function endTurn(){
+ if(state.ended)return;
+ state.turn++;
+ state.actions=2;
+ const rec=currentRecipe();
+ let gains=2+(isResearched("bun")?1:0)+(isResearched("global")?2:0)+(isResearched("secret")?1:0);
+ let spread=0;
+ REGIONS.forEach(r=>{
+  if(!hasRegion(r.id))return;
+  const data=state.regions[r.id];let inc=4+(isResearched("bun")?2:0)+(isResearched("global")?3:0);
+  if(affinity(r,rec)>1)inc+=3;
+  if(isResearched("cheese")&&r.kind==="cheese")inc+=3;
+  if(isResearched("spice")&&r.kind==="spicy")inc+=3;
+  if(isResearched("veggie")&&r.kind==="veggie")inc+=3;
+  data.accept=Math.min(100,data.accept+inc);spread+=inc;
+ });
+ state.points+=gains;
+ const events=[
+  ["📱","ショート動画でバーガーがバズった！ひらめきポイント＋2。",()=>state.points+=2],
+  ["🎉","フードフェスで新しいファンが増えた！人気拡大ボーナス。",()=>REGIONS.forEach(r=>{if(hasRegion(r.id))state.regions[r.id].accept=Math.min(100,state.regions[r.id].accept+5)})],
+  ["🧑‍🍳","人気シェフがレシピを紹介！ひらめきポイント＋1。",()=>state.points+=1],
+  ["🌦️","配送が少し遅れた。今ターンはいつも通り、次の手を考えよう。",()=>{}]
+ ];
+ const ev=events[Math.floor(Math.random()*events.length)];ev[2]();addNews(ev[0],ev[1]);
+ if(totalRegions()===REGIONS.length&&totalPopularity()>=60){showWin();return}
+ if(state.turn>state.maxTurns){showGameOver("⌛","あと一歩だった…！",`20ターン終了！ ${totalRegions()}地域に進出、世界の人気は${totalPopularity()}%。レシピを地域に合わせて、研究を活用して再挑戦しよう。`);return}
+ renderAll();toast(`ターン${state.turn}開始！ひらめき＋${gains}`);
+}
+function showWin(){
+ state.ended=true;state.won=true;renderAll();
+ $("modalEmoji").textContent="🏆";$("modalTitle").textContent="BURGER PLANET COMPLETE!";
+ $("modalText").textContent=`やったね！${totalRegions()}地域に広がり、世界の人気は${totalPopularity()}%。君のバーガーは世界の定番になった！`;
+ $("modalBackdrop").classList.add("show");
+}
+function showGameOver(emoji,title,text){
+ state.ended=true;state.won=false;renderAll();
+ $("modalEmoji").textContent=emoji;$("modalTitle").textContent=title;$("modalText").textContent=text;
+ $("modalBackdrop").classList.add("show");
+}
+function renderAll(){renderStats();renderMap();renderResearch();renderRecipes();renderNews();$("endTurnBtn").disabled=state.ended}
+function setTab(name){
+ document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));
+ document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="panel-"+name));
+}
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
+$("endTurnBtn").addEventListener("click",endTurn);
+$("restartBtn").addEventListener("click",()=>location.reload());
+$("closeModalBtn").addEventListener("click",()=>$("modalBackdrop").classList.remove("show"));
+renderAll();
+</script>
 </body>
 </html>
+
